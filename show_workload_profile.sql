@@ -32,3 +32,12 @@ from pg_stat_activity
 where state='active'
 group by usename, state
 order by 3 desc,1;
+
+-- Show transactions working more one minute
+select pid,usename,datname,query_start, wait_event_type, wait_event, state, query, backend_type 
+from pg_stat_activity
+where  query_start < (now() - interval '1 minutes')
+and backend_type ='client backend'
+and usename  not in ('postgres','rep')
+and usename is not null
+and state<>'idle';
